@@ -22,6 +22,9 @@ export class User {
   @Column({ type: 'boolean', default: false })
   active: boolean;
 
-  @CreateDateColumn()
+  @Column({ type: 'uuid', unique: true, name: 'activation_token' })
+  activationToken: string;
+
+  @CreateDateColumn({ name: 'created_on' })
   createdOn: Date;
 }
