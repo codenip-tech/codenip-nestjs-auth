@@ -11,8 +11,9 @@ export class UsersRepository extends Repository<User> {
     name: string,
     email: string,
     password: string,
+    activationToken: string,
   ): Promise<void> {
-    const user = this.create({ name, email, password });
+    const user = this.create({ name, email, password, activationToken });
 
     try {
       await this.save(user);
@@ -26,5 +27,17 @@ export class UsersRepository extends Repository<User> {
 
   async findOneByEmail(email: string): Promise<User> {
     return await this.findOne({ email });
+  }
+
+  async activateUser(user: User): Promise<void> {
+    user.active = true;
+    this.save(user);
+  }
+
+  async findOneInactiveByIdAndActivationToken(
+    id: string,
+    code: string,
+  ): Promise<User> {
+    return this.findOne({ id: id, activationToken: code, active: false });
   }
 }
