@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { ActivateUserDto } from './dto/activate-user.dto';
@@ -45,9 +53,8 @@ export class AuthController {
   @UseGuards(AuthGuard())
   changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    @GetUser() user: User
+    @GetUser() user: User,
   ): Promise<void> {
-    const a = 1;
-    return;
+    return this.authService.changePassword(changePasswordDto, user);
   }
 }
