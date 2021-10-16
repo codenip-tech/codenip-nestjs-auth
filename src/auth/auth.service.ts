@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dto/login.dto';
@@ -29,12 +33,9 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
     const { email, password } = loginDto;
-    const user = await this.usersRepository.findOneByEmail(email);
+    const user: User = await this.usersRepository.findOneByEmail(email);
 
-    if (
-      user &&
-      (await this.encoderService.checkPassword(password, user.password))
-    ) {
+    if (await this.encoderService.checkPassword(password, user.password)) {
       const payload: JwtPayload = { id: user.id, email, active: user.active };
       const accessToken = await this.jwtService.sign(payload);
 
@@ -50,6 +51,10 @@ export class AuthService {
         id,
         code,
       );
+
+    if (!user) {
+      throw new UnprocessableEntityException('This action can not be done');
+    }
 
     this.usersRepository.activateUser(user);
   }
