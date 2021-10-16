@@ -25,6 +25,14 @@ export class User {
   @Column({ type: 'uuid', unique: true, name: 'activation_token' })
   activationToken: string;
 
+  @Column({
+    type: 'uuid',
+    unique: true,
+    name: 'reset_password_token',
+    nullable: true,
+  })
+  resetPasswordToken: string;
+
   @CreateDateColumn({ name: 'created_on' })
   createdOn: Date;
 }
