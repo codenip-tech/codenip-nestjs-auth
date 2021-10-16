@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dto/login.dto';
@@ -54,14 +50,16 @@ export class AuthService {
         code,
       );
 
-    if (!user) {
-      throw new UnprocessableEntityException('This action can not be done');
-    }
-
     this.usersRepository.activateUser(user);
   }
 
   async requestResetPassword(
     requestResetPasswordDto: RequestResetPasswordDto,
-  ): Promise<void> {}
+  ): Promise<void> {
+    const { email } = requestResetPasswordDto;
+    const user: User = await this.usersRepository.findOneByEmail(email);
+    user.resetPasswordToken = v4();
+    this.usersRepository.save(user);
+    // Send email (e.g. Dispatch an event so MailerModule can send the email)
+  }
 }
